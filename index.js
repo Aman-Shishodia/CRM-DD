@@ -1,17 +1,14 @@
-const express = require('express')
-const cors = require('cors')
-const app = express()
-const port = 3001
+import express from "express";
+import cors from 'cors';
 
-require("./DataBase/DB")
+import router from "./Routes/User.js";
+export const app = express()
+
 
 app.use(cors())
 app.use(express.json())
 
+app.use('/user',router)
 app.get('/', (req, res) => {
   res.send('Hello Buddy')
-})
-
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
 })

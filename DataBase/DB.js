@@ -1,17 +1,26 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 // MongoDB connection string
-mongoose
-  .connect("mongodb://127.0.0.1:27017/CRMDatabase", {
+export const connectDb = () => {
+  mongoose.connect("mongodb+srv://kartikagarwal014:PUFAVRHTFP@cluster0.uuanu6k.mongodb.net/pragament-assignment", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => console.log("CRM Database Connected"))
   .catch((error) => console.log("Connection error", error));
+}
 
-// User Schema
-const userSchema = new Schema(
+// mongoose
+//   .connect("mongodb+srv://kartikagarwal014:PUFAVRHTFP@cluster0.uuanu6k.mongodb.net/pragament-assignment", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("CRM Database Connected"))
+//   .catch((error) => console.log("Connection error", error));
+
+// User Schema ------- Employee
+const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -44,7 +53,7 @@ const userSchema = new Schema(
 );
 
 // Sales/Leads Schema
-const leadSchema = new Schema(
+const leadSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -73,8 +82,8 @@ const leadSchema = new Schema(
   { timestamps: { createdAt: "creatingDate" } }
 );
 
-// Customer Accounts Schema
-const accountSchema = new Schema(
+// Customer Accounts Schema ------- Client
+const accountSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -107,7 +116,7 @@ const accountSchema = new Schema(
 );
 
 // Email Schema
-const emailSchema = new Schema({
+const emailSchema = new mongoose.Schema({
   subject: {
     type: String,
     required: true,
@@ -130,7 +139,7 @@ const emailSchema = new Schema({
 });
 
 // Communication Schema
-const communicationSchema = new Schema({
+const communicationSchema = new mongoose.Schema({
   type: {
     type: String,
     enum: ["call", "meeting", "email", "social_media"],
@@ -149,7 +158,7 @@ const communicationSchema = new Schema({
 });
 
 // Task Schema
-const taskSchema = new Schema(
+const taskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -177,24 +186,26 @@ const taskSchema = new Schema(
   { timestamps: true }
 );
 
+export const tokenSchema = new mongoose.Schema({
+  userId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: "User", // Update "user" to "Client"
+    unique: true,
+  },
+  token: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now(), expires: 3600 }
+});
+
 // Create models from schemas
-const User = mongoose.model("User", userSchema, "User");
-const Lead = mongoose.model("Lead", leadSchema, "Lead");
-const Account = mongoose.model("Account", accountSchema, "Account");
-const Email = mongoose.model("Email", emailSchema, "Email");
-const Communication = mongoose.model(
+export const User = mongoose.model("User", userSchema, "User");
+export const Lead = mongoose.model("Lead", leadSchema, "Lead");
+export const Account = mongoose.model("Account", accountSchema, "Account");
+export const Email = mongoose.model("Email", emailSchema, "Email");
+export const Communication = mongoose.model(
   "Communication",
   communicationSchema,
   "Communication"
 );
 const Task = mongoose.model("Task", taskSchema, "Task");
 
-// Export the models
-module.exports = {
-  User,
-  Lead,
-  Account,
-  Email,
-  Communication,
-  Task,
-};
