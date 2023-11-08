@@ -98,7 +98,6 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign({ _id: user._id }, process.env.jwtsecretKey);
-    console.log(user);
     res.cookie("token", token, {
       httpOnly: true,
     }).json({
@@ -269,3 +268,67 @@ export const changePassword = async (req, res) => {
     });
   }
 };
+
+//Reset Password
+export const resetpassword = async (req, res) => {
+
+  const userID = req.params.userID
+  try {
+    const user = await User.findById(userID)
+
+    if (!user) {
+      return res.status(404).json({
+        status: "False",
+        message: "User not found",
+      });
+    }
+
+    const resetToken = await Token.create({
+      userId: userID,
+      token: crypto.randomBytes(32).toString("hex"),
+    });
+
+    if (req.body.newPassword) {
+
+      const hashedPwd = await bcrypt.hash(req.body.newPassword, 10)
+      user.password = hashedPwd
+
+      await user.save();
+
+      const token = jwt.sign({ _id: user._id }, process.env.jwtsecretKey)
+      return res.cookie("token", token, {
+        httpOnly: true,
+      }).json({
+        status: "True",
+        message: "Password changed successfully",
+      });
+    } else {
+      return res.status(400).json({
+        status: "False",
+        message: "New password is required",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      status: "False",
+      message: "Internal server error",
+    });
+  }
+}
+
+export const deleteuser = async (req, res) => {
+
+  const userID = req.params.userID
+  try {
+    await User.findByIdAndDelete(userID)
+    res.status(201).json({
+      status: "True",
+      message: "User deleted successfully",
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "False",
+      message: "Internal server error",
+    });
+  }
+}
