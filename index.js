@@ -1,7 +1,9 @@
 import express from "express";
 import cors from 'cors';
-
+import dotenv from 'dotenv';
 import router from "./Routes/User.js";
+
+dotenv.config({path: './DataBase/config.env'})
 export const app = express()
 
 

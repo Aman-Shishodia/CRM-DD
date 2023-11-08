@@ -2,9 +2,14 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import { tokenSchema , User } from "../DataBase/DB.js";
+import { User } from "../models/User.js";
+import { tokenSchema } from "../models/Token.js";
+
 const Token = mongoose.model("Token", tokenSchema);
 
+
+
+//Signup API
 export const signup = async (req, res) => {
   const {
     firstName,
@@ -66,6 +71,9 @@ export const signup = async (req, res) => {
   }
 };
 
+
+
+//Login API
 export const login = async (req, res) => {
 
     const {email, password} = req.body
@@ -89,7 +97,7 @@ export const login = async (req, res) => {
             });
         }
 
-        const token = jwt.sign({ _id: user._id }, "yourSecretKey");
+        const token = jwt.sign({ _id: user._id }, process.env.jwtsecretKey);
         console.log(user);
         res.cookie("token", token, {
             httpOnly: true,
@@ -107,4 +115,47 @@ export const login = async (req, res) => {
 }
 
 
+//fetch USER PROFILE
+export const fetchProfile = async (req,res)=>{
+  const userId = req.params.userID;
+  console.log(userId);
+  try{
+    const user = await User.findOne({_id : userId});
+    if(!user){
+      return res.json({
+        success: false,
+        message: "User not found",
+    });
+  }
+    res.status(201).json({
+      success: true,
+      user: user
+    })
+    
 
+  }
+  catch(err){
+    res.status(400).json({
+      status: 'Failed to get user',
+      error: err
+    })
+  }
+  
+};
+
+
+//Fetch ALL USERS
+export const fetchallUsers = async(req,res)=>{
+  try{
+    const Users = await User.find({});
+    res.status(201).json({
+      success:true,
+      users: Users
+    })
+  }catch(err){
+    res.status(400).json({
+      status: 'Failed to get all users',
+      error: err
+    })
+  }
+}
