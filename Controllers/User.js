@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import { User } from "../models/User.js";
+import { User } from "../models/user.js";
 import { tokenSchema } from "../models/Token.js";
 
 const Token = mongoose.model("Token", tokenSchema);
@@ -76,86 +76,196 @@ export const signup = async (req, res) => {
 //Login API
 export const login = async (req, res) => {
 
-    const {email, password} = req.body
+  const { email, password } = req.body
 
-    try{
+  try {
 
-        let user = await User.findOne({email: email})
-        if(!user) {
-            return res.json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password)
-
-        if (!isPasswordValid) {
-            return res.json({
-                success: false,
-                message: "Invalid password",
-            });
-        }
-
-        const token = jwt.sign({ _id: user._id }, process.env.jwtsecretKey);
-        console.log(user);
-        res.cookie("token", token, {
-            httpOnly: true,
-          }).json({
-            success: true,
-            message: `Welcome back! ${user.firstName}`,
-            token,
-        });
-    } catch (err) {
-        res.status(400).json({
-            status: "LogIn failed",
-            message: err
-        })
-    }
-}
-
-
-//fetch USER PROFILE
-export const fetchProfile = async (req,res)=>{
-  const userId = req.params.userID;
-  console.log(userId);
-  try{
-    const user = await User.findOne({_id : userId});
-    if(!user){
+    let user = await User.findOne({ email: email })
+    if (!user) {
       return res.json({
         success: false,
         message: "User not found",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+
+    if (!isPasswordValid) {
+      return res.json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    const token = jwt.sign({ _id: user._id }, process.env.jwtsecretKey);
+    console.log(user);
+    res.cookie("token", token, {
+      httpOnly: true,
+    }).json({
+      success: true,
+      message: `Welcome back! ${user.firstName}`,
+      token,
     });
+  } catch (err) {
+    res.status(400).json({
+      status: "LogIn failed",
+      message: err
+    })
   }
+}
+
+//fetch USER PROFILE
+export const fetchProfile = async (req, res) => {
+  const userId = req.params.userID;
+  console.log(userId);
+  try {
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
+    }
     res.status(201).json({
       success: true,
       user: user
     })
-    
+
 
   }
-  catch(err){
+  catch (err) {
     res.status(400).json({
       status: 'Failed to get user',
       error: err
     })
   }
-  
+
 };
 
 
 //Fetch ALL USERS
-export const fetchallUsers = async(req,res)=>{
-  try{
+export const fetchallUsers = async (req, res) => {
+  try {
     const Users = await User.find({});
     res.status(201).json({
-      success:true,
+      success: true,
       users: Users
     })
-  }catch(err){
+  } catch (err) {
     res.status(400).json({
       status: 'Failed to get all users',
       error: err
     })
   }
 }
+
+//UPDATE User Profile
+export const updateUser = async (req, res) => {
+
+  const userID = req.params.userID
+
+  try {
+    const user = await User.findById(userID)
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (req.body.firstName) {
+      user.firstName = req.body.firstName;
+    }
+    if (req.body.lastName) {
+      user.lastName = req.body.lastName;
+    }
+    if (req.body.username) {
+      user.username = req.body.username;
+    }
+    if (req.body.email) {
+      user.email = req.body.email;
+    }
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+    if (req.body.role) {
+      user.role = req.body.role;
+    }
+    if (req.body.mobileNumber) {
+      user.mobileNumber = req.body.mobileNumber;
+    }
+    if (req.body.profileImage) {
+      user.profileImage = req.body.profileImage;
+    }
+    if (req.body.dob) {
+      user.dob = req.body.dob;
+    }
+    if (req.body.gender) {
+      user.gender = req.body.gender;
+    }
+    if (req.body.address) {
+      user.address = req.body.address;
+    }
+    if (req.body.linkedIn) {
+      user.linkedIn = req.body.linkedIn;
+    }
+
+    const updatedUser = await user.save();
+
+    res.status(201).json({
+      status: "Success",
+      user: updatedUser
+    })
+
+  } catch (err) {
+    res.status(400).json({
+      status: 'Failed to update user',
+      error: err
+    })
+  }
+}
+
+// Change Password
+export const changePassword = async (req, res) => {
+  const userID = req.params.userID;
+
+  try {
+    const user = await User.findById(userID);
+
+    if (!user) {
+      return res.status(404).json({
+        status: "False",
+        message: "User not found",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(req.body.currentPassword, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        status: "False",
+        message: "Invalid Password",
+      });
+    }
+
+    if (req.body.newPassword) {
+      const hashedPwd = await bcrypt.hash(req.body.newPassword, 10);
+      user.password = hashedPwd;
+
+      await user.save();
+
+      return res.status(201).json({
+        status: "True",
+        message: "Password changed successfully",
+      });
+    } else {
+      return res.status(400).json({
+        status: "False",
+        message: "New password is required",
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      status: "False",
+      message: "Internal server error",
+    });
+  }
+};
