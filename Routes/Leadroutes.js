@@ -14,6 +14,16 @@ router.get("/lead",async(req,res)=>{
     }
 })
 
+router.get("/lead/:id",async(req,res)=>{
+  try {
+    const { id } = req.params;
+    const data = await Lead.findById({ _id: id });
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+})
+
 router.post("/add-lead", async (req, res) => {
   try {
     const {

@@ -15,6 +15,16 @@ router.get("/all-communication",async(req,res)=>{
     }
 })
 
+router.get("/communication/:id",async(req,res)=>{
+  try {
+    const { id } = req.params;
+    const data = await Communication.findById({ _id: id });
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+})
+
 router.post("/add-communication",async(req,res)=>{
     try {
         const {
