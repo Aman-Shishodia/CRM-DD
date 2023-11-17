@@ -2,8 +2,8 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import { User } from "../models/user.js";
 import { tokenSchema } from "../models/Token.js";
+import { User } from "../models/User.js";
 
 const Token = mongoose.model("Token", tokenSchema);
 

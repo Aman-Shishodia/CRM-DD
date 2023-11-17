@@ -10,8 +10,11 @@ const emailSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  sender: { type: Schema.Types.ObjectId, ref: "User" },
-  receiver: {
+  sender: {
+    type: String, // Change this from ObjectId to String
+    required: true,
+  },
+    receiver: {
     type: String,
     required: true,
   }, 
