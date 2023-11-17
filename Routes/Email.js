@@ -1,5 +1,5 @@
 import express from 'express';
-import { Emailsend, Emailstatus, OpenedEmail, getemails } from '../Controllers/Email.js';
+import { Emaildetail, Emailsend, Emailstatus, OpenedEmail, getemails, tagEmail } from '../Controllers/Email.js';
 
 const router = express.Router();
 
@@ -11,6 +11,8 @@ router.get('/status/:emailID',Emailstatus);
 
 router.post('/opened/:emailID',OpenedEmail);
 
+router.get('/detail/:emailID',Emaildetail);
 
+router.put('/update-tag/:emailID',tagEmail);
 
 export default router;

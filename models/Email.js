@@ -18,6 +18,11 @@ const emailSchema = new mongoose.Schema({
     type: String,
     required: true,
   }, 
+  tag: {
+    type: String,
+    enum: ["Trash", "Important", "Spam"],
+    default: ""
+  },
   status: {
     type: String,
     enum: ["sent", "delivered", "opened", "clicked", "bounced"],
