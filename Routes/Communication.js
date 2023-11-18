@@ -1,78 +1,16 @@
 const express = require("express");
-const Communication =require("../schema/Communicationschema");
-
-// const Lead = mongoose.model("Lead", leadSchema);
-
+const { getcommunication, getcommunicationbyid, addcommunication, editcommunication, deletecommunication } = require("../controller/Communication");
 const router = express.Router();
 
 
-router.get("/all-communication",async(req,res)=>{
-    try {
-        const data = await Communication.find({})
-        res.status(200).send(data)
-    } catch (error) {
-        res.status(400).send(error)
-    }
-})
+router.get("/all-communication",getcommunication)
 
-router.get("/communication/:id",async(req,res)=>{
-  try {
-    const { id } = req.params;
-    const data = await Communication.findById({ _id: id });
-    res.status(200).send(data);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-})
+router.get("/communication/:id",getcommunicationbyid)
 
-router.post("/add-communication",async(req,res)=>{
-    try {
-        const {
-            type,
-              details,
-              date,
-              outcome,
-              participants
-        }=req.body;
-        const data = await Communication({ type,
-            details,
-            date,
-            outcome,
-            participants}).save()
-            res.status(200).send(data)
-    } catch (error) {
-        res.status(400).send(error)
-    }
-})
+router.post("/add-communication",addcommunication)
 
-router.patch("/edit-communication/:id",async(req,res)=>{
-    try {
-        const {id}=req.body;
-        const {
-            type,
-            details,
-            date,
-            outcome,
-            participants
-          } = req.body;
-          const predata = await Communication.findByIdAndUpdate(id, req.body, {
-            new: true,
-          });
-          res.status(200).send(predata);
-    } catch (error) {
-        res.status(400).send(error)
-    }
-})
+router.patch("/edit-communication/:id",editcommunication)
 
-router.delete("/delete-communication/:id", async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      const data = await Communication.findByIdAndDelete({ _id: id });
-      res.status(200).send(data);
-    } catch (error) {
-      res.status(400).send(error);
-    }
-  });
+router.delete("/delete-communication/:id", deletecommunication);
 
 module.exports= router
