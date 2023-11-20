@@ -1,9 +1,29 @@
-import mailjet from "node-mailjet";
 import { User } from "../models/User.js";
 import { Email } from "../models/Email.js";
+import multer from "multer";
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'E:/internship/CRM-DD/attachments');
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname)
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only JPEG and PNG are allowed.'), false);
+  }
+}
+
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 export const Emailsend = async (req, res) => {
   const { userID, senderEmail, receiverEmails, subject, textPart } = req.body; // receiverEmails is now an array
+  console.log(req)
   try {
     const userauth = await User.findOne({ _id: userID });
     if (!userauth) {
@@ -20,27 +40,39 @@ export const Emailsend = async (req, res) => {
       }
     }
 
-    if (Sender && validReceivers.length > 0) {
-      // Create an email for each valid receiver
-      const emailPromises = validReceivers.map((receiverEmail) => {
-        return Email.create({
-          subject: subject,
-          body: textPart,
-          sender: senderEmail,
-          receiver: receiverEmail,
-        });
-      });
-      await Promise.all(emailPromises);
+    // upload.array('attachments', 5)(req, res, async (err) => {
+    //   if (err) {
+    //     return res.status(400).json({ message: 'File upload error', error: err.message });
+    //   }
 
-      console.log("new emails created");
-      return res.status(201).json({
-        message: "Emails sent successfully",
-      });
-    } else {
-      return res.status(400).json({
-        message: "One or more users not found",
-      });
-    }
+    //   const attachments = req.files.map(file => ({
+    //     filename: file.filename,
+    //     path: file.path
+    //   }))
+      // })
+      if (Sender && validReceivers.length > 0) {
+        // Create an email for each valid receiver
+        const emailPromises = validReceivers.map((receiverEmail) => {
+          return Email.create({
+            subject: subject,
+            body: textPart,
+            sender: senderEmail,
+            receiver: receiverEmail,
+            attachments: attachments
+          });
+        });
+        await Promise.all(emailPromises);
+
+        console.log("new emails created");
+        return res.status(201).json({
+          message: "Emails sent successfully",
+        });
+      } else {
+        return res.status(400).json({
+          message: "One or more users not found",
+        });
+      }
+    })
   } catch (error) {
     console.log(error);
     return res.status(400).json({

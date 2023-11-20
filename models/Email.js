@@ -14,20 +14,26 @@ const emailSchema = new mongoose.Schema({
     type: String, // Change this from ObjectId to String
     required: true,
   },
-    receiver: {
+  receiver: {
     type: String,
     required: true,
-  }, 
+  },
   tag: {
     type: String,
-    enum: ["Trash", "Important", "Spam"],
-    default: ""
-  },
+    enum: ["Trash", "Important", "Spam", "Inbox"],
+    default: "Inbox"
+  },
   status: {
     type: String,
     enum: ["sent", "delivered", "opened", "clicked", "bounced"],
     default: "sent",
-  }, 
+  },
+  attachments: [
+    {
+      filename: String,
+      path: String,
+    },
+  ],
   sendingDate: { type: Date, default: Date.now },
 });
 
