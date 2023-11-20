@@ -8,10 +8,4 @@ require("./DataBase/DB")
 app.use(cors())
 app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.send('Hello Buddy')
-})
-
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
-})
+app.use('/user/:uid/tasks', require('./DataBase/routes/Task'))
