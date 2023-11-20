@@ -4,7 +4,7 @@ import multer from "multer";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'E:/internship/CRM-DD/attachments');
+    cb(null, 'C:/users/lakshay arora/CRM-DD/attachments');
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname)
@@ -185,9 +185,3 @@ export const tagEmail = async (req, res) => {
     });
   }
 };
-
-//status kab kab change hogaa
-//mail delete(to trash)
-//specific email detail
-//Email send me attachment
-//send mail to multiple users
