@@ -22,34 +22,35 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 export const Emailsend = async (req, res) => {
-  const { userID, senderEmail, receiverEmails, subject, textPart } = req.body; // receiverEmails is now an array
-  console.log(req)
+
   try {
-    const userauth = await User.findOne({ _id: userID });
-    if (!userauth) {
-      return res.status(401).json({ msg: "Unauthorized" });
-    }
-    const Sender = await User.findOne({ email: senderEmail });
+    upload.array('attachments', 5)(req, res, async (err) => {
 
-    // Validate all receiver emails
-    const validReceivers = [];
-    for (const email of receiverEmails) {
-      const Receiver = await User.findOne({ email: email });
-      if (Receiver) {
-        validReceivers.push(email);
+      const { userID, senderEmail, subject, textPart } = req.body;
+      const receiverEmails = req.body.receiverEmails.split(','); // receiverEmails is now an array
+
+      const userauth = await User.findOne({ _id: userID });
+      if (!userauth) {
+        return res.status(401).json({ msg: "Unauthorized" });
       }
-    }
+      const Sender = await User.findOne({ email: senderEmail });
 
-    // upload.array('attachments', 5)(req, res, async (err) => {
-    //   if (err) {
-    //     return res.status(400).json({ message: 'File upload error', error: err.message });
-    //   }
+      // Validate all receiver emails
+      const validReceivers = [];
+      for (const email of receiverEmails) {
+        const Receiver = await User.findOne({ email: email.trim() });
+        if (Receiver) {
+          validReceivers.push(email);
+        }
+      }
+      if (err) {
+        return res.status(400).json({ message: 'File upload error', error: err.message });
+      }
 
-    //   const attachments = req.files.map(file => ({
-    //     filename: file.filename,
-    //     path: file.path
-    //   }))
-      // })
+      const attachments = req.files.map(file => ({
+        filename: file.filename,
+        path: file.path
+      }))
       if (Sender && validReceivers.length > 0) {
         // Create an email for each valid receiver
         const emailPromises = validReceivers.map((receiverEmail) => {
@@ -86,7 +87,6 @@ export const getemails = async (req, res) => {
 
   try {
     const email = await Email.find({ sender: senderEmail });
-    // console.log(email);
     if (email) {
       return res.status(200).json({
         emails: email,
@@ -119,7 +119,6 @@ export const Emailstatus = async (req, res) => {
     res.status(400).json({
       error: error,
     });
-    // console.log(error);
   }
 };
 
