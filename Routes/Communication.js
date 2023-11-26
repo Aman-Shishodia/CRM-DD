@@ -1,5 +1,5 @@
-const express = require("express");
-const { getallCommunication, getCommunication, createCommunication, editCommunication, deleteCommunication } = require("../Controllers/Communication");
+import express from 'express';
+import {getallCommunication, getCommunication, createCommunication, editCommunication, deleteCommunication} from '../Controllers/Communication.js'
 
 const router = express.Router();
 

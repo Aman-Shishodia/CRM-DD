@@ -6,6 +6,7 @@ import emailroute from './Routes/Email.js';
 import taskRoute from './Routes/Task.js';
 import LeadRoute from './Routes/Leads.js';
 import CommunicationRoute from './Routes/Communication.js'
+import calenderRoute from "./Routes/calender.js";
 dotenv.config({path: './DataBase/config.env'})
 export const app = express()
 
@@ -18,6 +19,7 @@ app.use('/email',emailroute)
 app.use('/tasks',taskRoute);
 app.use('/leads',LeadRoute);
 app.use('/communication',CommunicationRoute)
+app.use('/calender', calenderRoute)
 app.get('/', (req, res) => {
   res.send('Hello Buddy')
 })

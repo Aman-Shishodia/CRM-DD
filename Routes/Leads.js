@@ -1,6 +1,5 @@
-import { createLead, deleteLead, editLead, getLead, getallLeads, searchLead } from "../Controllers/Leads";
-
-const express = require("express");
+import express from 'express';
+import { createLead, deleteLead, editLead, getLead, getallLeads, searchLead } from "../Controllers/Leads.js";
 
 const router = express.Router();
 

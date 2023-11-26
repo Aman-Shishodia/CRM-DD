@@ -1,5 +1,4 @@
-
-import { Communication } from "../models/Communication"
+import { Communication } from "../models/Communication.js"
 
 export const getallCommunication = async(req,res)=>{
     try {
