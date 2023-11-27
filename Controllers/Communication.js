@@ -1,5 +1,5 @@
 
-import { Communication } from "../models/Communication"
+import { Communication } from "../models/Communication.js"
 
 export const getallCommunication = async(req,res)=>{
     try {
@@ -64,7 +64,7 @@ export const editCommunication = async(req,res)=>{
 
 export const deleteCommunication = async (req, res) => {
     const { id } = req.params;
-  
+
     try {
       const data = await Communication.findByIdAndDelete({ _id: id });
       res.status(200).send(data);
