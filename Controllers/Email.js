@@ -4,7 +4,7 @@ import multer from "multer";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'C:/users/lakshay arora/CRM-DD/attachments');
+    cb(null, 'attachments');
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname)
@@ -27,7 +27,7 @@ export const Emailsend = async (req, res) => {
     upload.array('attachments', 5)(req, res, async (err) => {
 
       const { userID, senderEmail, subject, textPart } = req.body;
-      const receiverEmails = req.body.receiverEmails.split(','); // receiverEmails is now an array
+      const receiverEmails = req.body.receiverEmails.split(',');
 
       const userauth = await User.findOne({ _id: userID });
       if (!userauth) {
@@ -35,7 +35,6 @@ export const Emailsend = async (req, res) => {
       }
       const Sender = await User.findOne({ email: senderEmail });
 
-      // Validate all receiver emails
       const validReceivers = [];
       for (const email of receiverEmails) {
         const Receiver = await User.findOne({ email: email.trim() });
@@ -52,7 +51,7 @@ export const Emailsend = async (req, res) => {
         path: file.path
       }))
       if (Sender && validReceivers.length > 0) {
-        // Create an email for each valid receiver
+        
         const emailPromises = validReceivers.map((receiverEmail) => {
           return Email.create({
             subject: subject,
@@ -112,7 +111,6 @@ export const Emailstatus = async (req, res) => {
     }
 
     return res.status(200).json({
-      // email : email,
       status: email.status,
     });
   } catch (error) {

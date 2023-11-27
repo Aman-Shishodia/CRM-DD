@@ -11,7 +11,7 @@ const emailSchema = new mongoose.Schema({
     required: true,
   },
   sender: {
-    type: String, // Change this from ObjectId to String
+    type: String,
     required: true,
   },
   receiver: {

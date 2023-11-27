@@ -7,9 +7,6 @@ import { User } from "../models/User.js";
 
 const Token = mongoose.model("Token", tokenSchema);
 
-
-
-//Signup API
 export const signup = async (req, res) => {
   const {
     firstName,
@@ -71,9 +68,6 @@ export const signup = async (req, res) => {
   }
 };
 
-
-
-//Login API
 export const login = async (req, res) => {
 
   const { email, password } = req.body
@@ -113,7 +107,6 @@ export const login = async (req, res) => {
   }
 }
 
-//fetch USER PROFILE
 export const fetchProfile = async (req, res) => {
   const userId = req.params.userID;
   console.log(userId);
@@ -141,8 +134,6 @@ export const fetchProfile = async (req, res) => {
 
 };
 
-
-//Fetch ALL USERS
 export const fetchallUsers = async (req, res) => {
   try {
     const Users = await User.find({});
@@ -158,7 +149,6 @@ export const fetchallUsers = async (req, res) => {
   }
 }
 
-//UPDATE User Profile
 export const updateUser = async (req, res) => {
 
   const userID = req.params.userID
@@ -222,7 +212,6 @@ export const updateUser = async (req, res) => {
   }
 }
 
-// Change Password
 export const changePassword = async (req, res) => {
   const userID = req.params.userID;
 
@@ -269,7 +258,6 @@ export const changePassword = async (req, res) => {
   }
 };
 
-//Reset Password
 export const resetpassword = async (req, res) => {
 
   const userID = req.params.userID
