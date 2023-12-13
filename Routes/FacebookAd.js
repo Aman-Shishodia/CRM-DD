@@ -9,11 +9,11 @@ import express from "express";
 const router = express.Router();
 
 const accessToken =
-  ".....";
+  "....."; // replace with access token
 const api = FacebookAdsApi.init(accessToken);
 
 const adAccount = AdAccount;
-const account = new adAccount("act_00000000000");
+const account = new adAccount("act_00000000000");//replace with account id
 
 router.post("/create-campaign", async (req, res) => {
   try {
