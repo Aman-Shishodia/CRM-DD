@@ -1,26 +1,30 @@
 import { Document } from "../models/Document.js";
 import { Account } from "../models/Account.js";
+import { Folder } from "../models/DocumentFolder.js";
 import { Quote } from "../models/Quote.js";
-import multer from "multer";
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'C:\Users\devad\OneDrive\Desktop\Amuktha Malyada\attachments');
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname)
-  },
-});
-
-const upload = multer({ storage: storage });
 
 export const getDocuments = async (req, res) => {
   try {
     const u_id = req.params.userID;
+
     const docs = await Document.find({ user: u_id });
-    return res.status(201).json(docs);
+    const folders = await Folder.find({ user: u_id });
+    return res.status(201).json({ docs, folders });
   } catch (e) {
-    return res.status(201).send("User not Found!!");
+    return res.send(e);
+  }
+};
+export const getFolderDocuments = async (req, res) => {
+  try {
+    const u_id = req.params.userID;
+    const f_id = req.params.folderID;
+
+    const folder = await Folder.findById(f_id);
+    const folderDocs = await Document.find({ user: u_id, folder: folder.name });
+
+    return res.status(201).json({ folderDocs });
+  } catch (e) {
+    return res.send(e);
   }
 };
 
@@ -38,8 +42,13 @@ export const getQuotes = async (req, res) => {
 
 export const createDocument = async (req, res) => {
   try {
+    console.log("ebtered 1");
     const { description, status, name, folder } = req.body;
+    console.log("ebtered 2");
     const u_id = req.params.userID;
+    console.log("ebtered" + u_id);
+    console.log(req.description);
+    console.log(req.body);
     let doc = await Document.create({
       user: u_id,
       description: description,
@@ -47,6 +56,22 @@ export const createDocument = async (req, res) => {
       name: name,
       folder: folder,
     });
+    console.log("entered hello");
+    return res.status(201).json(doc);
+  } catch (e) {
+    return res.status(400).send("Failed to Create!!");
+  }
+};
+
+export const createFolder = async (req, res) => {
+  try {
+    const u_id = req.params.userID;
+
+    let doc = await Folder.create({
+      user: u_id,
+      name: req.body.name,
+    });
+
     return res.status(201).json(doc);
   } catch (e) {
     return res.status(400).send("Failed to Create!!");
@@ -57,6 +82,20 @@ export const deleteDocument = async (req, res) => {
   try {
     let deletedDocument = await Document.findByIdAndDelete(req.params.docID);
     return res.status(201).json(deletedDocument);
+  } catch (e) {
+    return res.status(400).send("Failed to Delete!!");
+  }
+};
+export const deleteFolder = async (req, res) => {
+  try {
+
+    const u_id = req.params.userID;
+    const folder = await Folder.findById(req.params.folderID);
+    console.log("Entered");
+    const folderDocs = await Document.deleteMany({ user: u_id, folder: folder.name });
+    const delFolder = await Document.findByIdAndDelete(req.params.folderID);
+
+    return res.status(201).json({ folderDocs, delFolder });
   } catch (e) {
     return res.status(400).send("Failed to Delete!!");
   }
@@ -76,7 +115,7 @@ export const updateDocument = async (req, res) => {
     });
     return res.status(201).json(updatedDocument);
   } catch (e) {
-    res.status(404).send("Failed to Delete!!");
+    res.send(e);
   }
 };
 export const filteredDocuments = async (req, res) => {
