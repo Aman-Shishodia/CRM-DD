@@ -22,6 +22,12 @@ const documentSchema = new mongoose.Schema(
     folder: {
       type: String,
     },
+    documents: [
+      {
+        filename: String,
+        path: String,
+      },
+    ],
   },
   { timestamps: true }
 );

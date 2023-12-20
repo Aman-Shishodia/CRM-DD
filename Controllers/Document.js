@@ -2,6 +2,19 @@ import { Document } from "../models/Document.js";
 import { Account } from "../models/Account.js";
 import { Folder } from "../models/DocumentFolder.js";
 import { Quote } from "../models/Quote.js";
+import multer from "multer";
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'C:\\Users\\devad\\OneDrive\\Desktop\\Amuktha Malyada\\attachments');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + req.params.userID + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 export const getDocuments = async (req, res) => {
   try {
@@ -9,6 +22,8 @@ export const getDocuments = async (req, res) => {
 
     const docs = await Document.find({ user: u_id });
     const folders = await Folder.find({ user: u_id });
+
+
     return res.status(201).json({ docs, folders });
   } catch (e) {
     return res.send(e);
@@ -30,9 +45,9 @@ export const getFolderDocuments = async (req, res) => {
 
 export const getQuotes = async (req, res) => {
   try {
-    console.log("Entered");
     const u_id = req.params.userID;
     const quotes = await Quote.find({ user: u_id });
+
     return res.status(201).json(quotes);
   } catch (e) {
     return res.status(201).send("User not Found!!");
@@ -42,24 +57,30 @@ export const getQuotes = async (req, res) => {
 
 export const createDocument = async (req, res) => {
   try {
-    console.log("ebtered 1");
-    const { description, status, name, folder } = req.body;
-    console.log("ebtered 2");
-    const u_id = req.params.userID;
-    console.log("ebtered" + u_id);
-    console.log(req.description);
-    console.log(req.body);
-    let doc = await Document.create({
-      user: u_id,
-      description: description,
-      status: status,
-      name: name,
-      folder: folder,
+    upload.array('files')(req, res, async (err) => {
+      const { description, status, name, folder } = req.body;
+      const u_id = req.params.userID;
+      console.log(req.files);
+      const attachments = req.files.map(file => ({
+        filename: file.filename,
+        path: file.path
+      }))
+      console.log(attachments);
+      let doc = await Document.create({
+        user: u_id,
+        description: description,
+        status: status,
+        name: name,
+        folder: folder,
+        documents: attachments,
+      });
+      return res.status(201).json(doc);
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      error: error,
     });
-    console.log("entered hello");
-    return res.status(201).json(doc);
-  } catch (e) {
-    return res.status(400).send("Failed to Create!!");
   }
 };
 
@@ -132,7 +153,6 @@ export const filteredDocuments = async (req, res) => {
 
 export const fullDocuments = async (req, res) => {
   try {
-    console.log("Hello");
     const u_id = req.params.userID;
     const docs = await Document.find({ user: u_id });
     const accounts = await Account.find({ user: u_id });
