@@ -8,6 +8,7 @@ import LeadRoute from "./Routes/Leads.js";
 import casesRoute from "./Routes/Case.js";
 import CommunicationRoute from "./Routes/Communication.js";
 import facebookAdRoute from "./Routes/FacebookAd.js";
+import GoogleAnalyticsRoute from "./Routes/GoogleAnalytics.js";
 import documentsRoute from "./Routes/Documents.js";
 dotenv.config({ path: "./DataBase/config.env" });
 import bodyParser from "body-parser";
@@ -26,6 +27,7 @@ app.use("/communication", CommunicationRoute);
 app.use("/cases", casesRoute);
 app.use("/documents", documentsRoute);
 app.use("/facebookAd", facebookAdRoute);
+app.use("/googleAnalytics", GoogleAnalyticsRoute);
 app.get("/", (req, res) => {
   res.send("Hello Buddy");
 });

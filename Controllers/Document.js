@@ -7,7 +7,7 @@ import multer from "multer";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'C:\\Users\\devad\\OneDrive\\Desktop\\Amuktha Malyada\\attachments');
+    cb(null, 'attachments');
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + req.params.userID + "-" + file.originalname);
