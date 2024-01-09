@@ -19,8 +19,9 @@ app.use('/user',userRouter)
 app.use('/email',emailroute)
 app.use('/tasks',taskRoute);
 app.use('/leads',LeadRoute);
-app.use('/communication',CommunicationRoute)
-app.use("/sales",SalesRoute)
+app.use('/communication',CommunicationRoute);
+app.use("/sales",SalesRoute);
+
 app.get('/', (req, res) => {
   res.send('Hello Buddy')
 })
