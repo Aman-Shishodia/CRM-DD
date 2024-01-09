@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
+
+const MONGO_DB_URI = "mongodb://127.0.0.1:27017/test" || process.env.MONGO_DB_URI
+
 export const connectDb = () => {
-  mongoose.connect(process.env.MONGO_DB_URI, {
+  mongoose.connect(MONGO_DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
