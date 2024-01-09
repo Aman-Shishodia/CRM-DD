@@ -1,3 +1,4 @@
+
 import { Lead } from "../models/Lead.js"
 
 export const getallLeads = async(req,res)=>{
@@ -82,7 +83,7 @@ export const searchLead = async (req, res) => {
       const data = await Lead.find({
         $or: [
           { title: { $regex: req.params.key } },
-         
+
         ],
       });
       res.status(200).send(data);
@@ -93,7 +94,7 @@ export const searchLead = async (req, res) => {
 
 export const deleteLead =  async (req, res) => {
     const { id } = req.params;
-  
+
     try {
       const data = await Lead.findByIdAndDelete({ _id: id });
       res.status(200).send(data);

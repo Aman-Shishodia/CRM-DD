@@ -6,20 +6,22 @@ import emailroute from './Routes/Email.js';
 import taskRoute from './Routes/Task.js';
 import LeadRoute from './Routes/Leads.js';
 import CommunicationRoute from './Routes/Communication.js'
-import calenderRoute from "./Routes/calender.js";
+import SalesRoute from './Routes/Sales.js';
 dotenv.config({path: './DataBase/config.env'})
 export const app = express()
 
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json());
 
 app.use('/user',userRouter)
 app.use('/email',emailroute)
 app.use('/tasks',taskRoute);
 app.use('/leads',LeadRoute);
-app.use('/communication',CommunicationRoute)
-app.use('/calender', calenderRoute)
+app.use('/communication',CommunicationRoute);
+app.use("/sales",SalesRoute);
+
 app.get('/', (req, res) => {
   res.send('Hello Buddy')
 })
